@@ -9,7 +9,7 @@ PGPASSWORD=$3
 systemctl status docker || systemctl start docker
 
 #check if user wants to create new psql table
-if [ $script_execute== "create" ]; then
+if [ $script_execute == "create" ]; then
   #list all docker containers and filter for jrvs-psql and then counts words in name
   if  [ "$(docker ps -a -f name=jrvs-psql | wc -l)" == "2" ]; then
     echo "Error: Container already exists"

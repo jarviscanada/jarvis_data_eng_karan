@@ -6,7 +6,15 @@ psql_host=$1
 psql_port=$2
 db_name=$3
 psql_user=$4
-psql_pwd=$5
+psql_password=$5
+
+export PGPASSWORD=${psql_password}
+
+#validate arguments
+if [ "$#" -ne 5 ]; then
+    echo "Illegal number of parameters"
+    exit 1
+fi
 
 #Main code
 #save cpu list command
@@ -31,7 +39,7 @@ total_mem=$( echo "$free_out" | egrep "^Mem:" | awk '{print $2}' | xargs )
 timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 
 #database insert command
-insert_cmd="INSERT INTO HOST_INFO (hostname, cpu_number, cpu_architecture, cpu_model, cpu_mhz, L2_cache, total_mem,
+insert_cmd="INSERT INTO host_info (hostname, cpu_number, cpu_architecture, cpu_model, cpu_mhz, L2_cache, total_mem,
             time_stamp)
             VALUES(
             '$hostname',
@@ -43,6 +51,6 @@ insert_cmd="INSERT INTO HOST_INFO (hostname, cpu_number, cpu_architecture, cpu_m
             $total_mem,
             '$timestamp');"
 #database insert execution
-psql -h $psql_host -p $psql_port -U $psql_user -d $db_name -W -c "$insert_cmd"
+psql -h $psql_host -p $psql_port -U $psql_user -d $db_name -c "$insert_cmd"
 
 exit 0
