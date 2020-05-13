@@ -1,10 +1,7 @@
 --Karan Khalsa 05/13/2020
 --psql queries to better see cluster usage
 
-INSERT INTO host_info (hostname, cpu_number, cpu_architecture, cpu_model, cpu_mhz, L2_cache, total_mem, time_stamp)
-
-INSERT INTO host_usage (time_stamp, host_id, memory_free, cpu_idle, cpu_kernel, disk_io, disk_available)
-
+--Grouping hosts by hardware info
 SELECT
     host_info.cpu_number AS cpu_number,
     host_info.id AS host_id,
@@ -13,8 +10,21 @@ SELECT
     GROUP BY cpu_number, host_id
     ORDER BY total_mem DESC;
 
+--find average used memeory percentage over 5 min intervals
 SELECT
     host_usage.host_id AS host_id,
-    host_info.total_mem AS total_mem,
     host_info.hostname AS hostname,
-        AVG(total_mem - host_usage.memory_free)
+    DATE_TRUNC('hour', host_usage.time_stamp) + INTERVAL '5 minutes' *
+        ROUND(DATE_PART('minutes', host_usage.time_stamp)/5.0) AS new_time_stamp,
+    ROUND ((AVG(CAST((host_info.total_mem - (host_usage.memory_free*1024)) AS FLOAT) /
+        host_info.total_mem * 1.0)*100)::NUMERIC,0)  AS used_mem_percentage
+FROM
+    host_usage
+    INNER JOIN host_info ON host_usage.host_id=host_info.id
+GROUP BY
+    host_id,
+    hostname,
+    total_mem,
+    new_time_stamp
+ORDER BY
+    host_usage.host_id;
