@@ -27,11 +27,11 @@ On the main server, a PSQL instance was created using a docker image. From there
 
   1.1 Set up the docker container and start the container using [psql_docker.sh] script and CLI
 
-     # Create PSQL docker container from the machines home directory
-     ./linux_sql/scripts/psql_docker.sh create psql_user psql_password
+    # Create PSQL docker container from the machines home directory
+    ./linux_sql/scripts/psql_docker.sh create psql_user psql_password
      
-     # Start the container
-     ./linux_sql/scripts/psql_docker.sh start psql_user psql_password
+    # Start the container
+    ./linux_sql/scripts/psql_docker.sh start psql_user psql_password
 
 **2. Create database and tables**
 
@@ -40,43 +40,41 @@ turned off*
 
   2.1 Connect to PSQL using CLI (will be asked for psql_password from step 1)
   
-      # Connect to PSQL
-      psql -h psql_host -U psql_user -W
+    # Connect to PSQL
+    psql -h psql_host -U psql_user -W
   
   2.2 Create the database using CLI
     
-       # Create the database
-       CREATE DATABASE host_agent;
+    # Create the database
+    CREATE DATABASE host_agent;
        
   2.3 Create database tables using CLI and script
     
-       # Create the tables
-       psql -h psql_host -U psql_user -d db_name -f ./linux_sql/sql/ddl.sql
+    # Create the tables
+    psql -h psql_host -U psql_user -d db_name -f ./linux_sql/sql/ddl.sql
 
-**3. Set up hardware information and usage data transfer**
+**3. Setup hardware information data transfer using [host_info.sh] script and CLI**
 
-  3.1 Send hardware information using [host_info.sh] script and CLI
+    # Loads server specs into PSQL database
+    ./linux_sql/scripts/host_info.sh psql_host psql_port db_name psql_user psql_password
   
-       # Loads server specs into PSQL database
-       ./linux_sql/scripts/host_info.sh psql_host psql_port db_name psql_user psql_password
-  
-  3.2 Setup hardware usage data transfer using [host_usage.sh] script, crontab and CLI
-  
-   3.2.1 Send test data to database using CLI
+**4. Setup hardware usage data transfer automation** 
+
+  4.1 Send test data to database using [host_usage.sh] script, crontab and CLI
    
-         # Loads server resource usage into PSQL database
-         ./linux_sql/scripts/host_usage.sh psql_host psql_port db_name psql_user psql_password
+    # Loads server resource usage into PSQL database
+    ./linux_sql/scripts/host_usage.sh psql_host psql_port db_name psql_user psql_password
          
-   3.2.2 Setup a crontab job to automatically send data to database using CLI
+  4.2 Setup a crontab job to automatically send data to database using CLI
       
-         # Create/ edit crontab jobs
-         crontab -e
-         
-         # Sets the bash script to run every minute and log results
-         * * * * * bash [path]/host_usage.sh psql_host psql_port db_name psql_user psql_password &> /tmp/host_usage.log
-         
-         # Verify job is running by listing current crontab jobs
-         crontab -ls
+    # Create/ edit crontab jobs
+    crontab -e
+        
+    # Sets the bash script to run every minute and log results
+    * * * * * bash [path]/host_usage.sh psql_host psql_port db_name psql_user psql_password &> /tmp/host_usage.log
+      
+    # Verify job is running by listing current crontab jobs
+    crontab -ls
         
 ## Improvements
 
