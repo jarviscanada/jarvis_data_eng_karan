@@ -17,25 +17,15 @@ if [ "$#" -ne 5 ]; then
 fi
 
 #Main code
-#save cpu list command
 lscpu_out=$(lscpu)
-#save memory command
 free_out=$(free -k)
-#save hostname
 hostname=$(hostname -f)
-#save cpu number
 cpu_number=$( echo "$lscpu_out" | egrep "^CPU\(s\):" | awk '{print $2}' | xargs )
-#save cpu arch
 cpu_architecture=$( echo "$lscpu_out" | egrep "^Architecture:" | awk '{print $2}' | xargs )
-#save cpu model
 cpu_model=$( echo "$lscpu_out" | egrep "^Model:" | awk '{print $2}' | xargs )
-#save cpu mhz
 cpu_mhz=$( echo "$lscpu_out" | egrep "^CPU\ MHz:" | awk '{print $3}' | xargs )
-#save cpu l2_cache in KB
 l2_cache=$( echo "$lscpu_out" | egrep "^L2\ cache:" | awk '{print $3}' | sed 's/K//' | xargs )
-#save total_mem in KB
 total_mem=$( echo "$free_out" | egrep "^Mem:" | awk '{print $2}' | xargs )
-#save timestamp
 timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 
 #database insert command
@@ -53,4 +43,4 @@ insert_cmd="INSERT INTO host_info (hostname, cpu_number, cpu_architecture, cpu_m
 #database insert execution
 psql -h $psql_host -p $psql_port -U $psql_user -d $db_name -c "$insert_cmd"
 
-exit 0
+exit $?
