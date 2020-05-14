@@ -12,8 +12,8 @@ On the main server, a PSQL instance was created using a docker image. From there
   to send usage to send data to the database.
 ##### Database:
   - A PostgresSQL database (host_agent) was used to store the data from each server
-  - Two tables (host_info, host_usage) were created using the ddl.sql file
-  - The data was then queried to provide useful summaries using queries.sql
+  - Two tables (host_info, host_usage) were created using the [ddl.sql] script
+  - The data was then queried to provide useful summaries using [queries.sql] script
    
 ##### Scripts:
   - The docker container was created using [psql_docker.sh] bash script
